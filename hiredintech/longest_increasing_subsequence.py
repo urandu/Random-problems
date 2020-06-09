@@ -17,97 +17,75 @@ You can design a solution, which works fast enough for N <= 1,000 but is slow fo
 
 """
 
-
 def longest_increasing_subsequence(sequence):
-    # Write your solution here
-
-    low_index = 0
-    high_index = 0
-
-    temp_low_index = 0
-    temp_high_index = 0
-
-    size = len(sequence)
-    # print(size)
-
-    if size < 2:
+    array_length = len(sequence)
+    if array_length == 1:
         return sequence
 
-    for i in range(0, size - 1):
-        if sequence[i] < sequence[(i + 1)]:
-            temp_high_index = i + 1
-        else:
-            temp_low_index = i + 1
-            temp_high_index = i + 1
-        if temp_low_index - temp_high_index <= low_index - high_index:
-            high_index = temp_high_index
-            low_index = temp_low_index
-    return sequence[low_index:high_index + 1]
+    longest_seq = []
+
+    for i in range(0,array_length):
+        temp_seq = []
+        temp_seq.append(sequence[i])
+        for x in range(i,array_length):
+            if temp_seq[-1] < sequence[x]:
+                temp_seq.append(sequence[x])
+        if len(longest_seq) < len(temp_seq):
+            longest_seq = temp_seq
+
+    return longest_seq
 
 
-list = [1, 3, 2, 4, 5, 7]
-list2 = [1]
+def longest_increasing_subsequence2(sequence):
+    from collections import deque
+    array_length = len(sequence)
+    if array_length == 1:
+        return sequence
+
+    lower_index1 = 0
+    upper_index1 = array_length - 1
+
+    longest_inc_seq = deque()
+    longest_dec_seq = deque()
+    temp_inc_seq = deque()
+    temp_dec_seq = deque()
+    while lower_index1 < upper_index1:
+        temp_inc_seq.clear()
+        temp_dec_seq.clear()
+        temp_inc_seq.append(sequence[lower_index1])
+        temp_dec_seq.appendleft(sequence[upper_index1])
+
+        for i in range(lower_index1,array_length):
+            print(temp_inc_seq[-1],sequence[i])
+            if temp_inc_seq[-1] < sequence[i]:
+                temp_inc_seq.append(sequence[i])
+
+        #     if temp_dec_seq[0] > sequence[array_length -(i+1)]:
+        #         temp_dec_seq.appendleft(sequence[array_length -(i+1)])
+        # print(temp_inc_seq, temp_dec_seq)
+
+
+        # if len(longest_inc_seq) < len(temp_dec_seq):
+        #     longest_inc_seq = temp_dec_seq.copy()
+        if len(longest_inc_seq) < len(temp_inc_seq):
+            longest_inc_seq = temp_inc_seq.copy()
+
+
+
+        lower_index1 += 1
+        upper_index1 -= 1
+
+
+
+    return list(longest_inc_seq)
+
+
+
+list1 = [0,1,2,43,4,45,6,10]
+list2 = [11, 5, 4]
 list3 = [1, 3, 3]
 
-print(longest_increasing_subsequence(list))
-print(longest_increasing_subsequence(list2))
-print(longest_increasing_subsequence(list3))
+print(longest_increasing_subsequence2(list1))
+# print(longest_increasing_subsequence2(list2))
+# print(longest_increasing_subsequence2(list3))
 
-global maximum
-
-
-def _lis(arr, n):
-    global maximum
-
-    # Base Case
-    if n == 1:
-        return 1
-
-    # maxEndingHere is the length of LIS ending with arr[n-1]
-    maxEndingHere = 1
-
-    """Recursively get all LIS ending with arr[0], arr[1]..arr[n-2] 
-	IF arr[n-1] is maller than arr[n-1], and max ending with 
-	arr[n-1] needs to be updated, then update it"""
-    for i in range(1, n):
-        res = _lis(arr, i)
-        if arr[i - 1] < arr[n - 1] and res + 1 > maxEndingHere:
-            maxEndingHere = res + 1
-
-    # Compare maxEndingHere with overall maximum. And
-    # update the overall maximum if needed
-    maximum = max(maximum, maxEndingHere)
-
-    return maxEndingHere
-
-
-def lis(arr):
-    n = len(arr)
-
-    # Declare the list (array) for LIS and initialize LIS
-    # values for all indexes
-    lis = [1] * n
-
-    # Compute optimized LIS values in bottom up manner
-    for i in range(1, n):
-        for j in range(0, i):
-            if arr[i] > arr[j] and lis[i] < lis[j] + 1:
-                lis[i] = lis[j] + 1
-
-    # Initialize maximum to 0 to get the maximum of all
-    # LIS
-    maximum = 0
-
-    # Pick maximum of all LIS values
-    for i in range(n):
-        maximum = max(maximum, lis[i])
-
-    return maximum
-
-
-# Driver program to test the above function
-arr = [1, 3, 2, 4, 5, 7]
-n = len(arr)
-print("Length of lis is ", lis(arr))
-
-# This code is contributed by NIKHIL KUMAR SINGH
